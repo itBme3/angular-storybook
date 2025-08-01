@@ -1,0 +1,83 @@
+<cdk-virtual-scroll-viewport
+  #viewport
+  class="virtual-scroll-viewport"
+  [itemSize]="effectiveItemSize"
+  [minBufferPx]="minBufferPx"
+  [maxBufferPx]="maxBufferPx"
+  [style.height]="height"
+  [style.width]="width"
+  [class]="viewportClass"
+>
+  <div
+    *cdkVirtualFor="let item of items; let index = index; trackBy: trackByFn"
+    class="virtual-scroll-item"
+    [class.selected]="item.selected"
+    [attr.aria-label]="'Item ' + (index + 1) + ' of ' + items.length"
+  >
+    <!-- Use custom template if provided, otherwise use default -->
+    <ng-container
+      *ngTemplateOutlet="
+        itemTemplate || defaultItemTemplate;
+        context: { $implicit: item, index: index }
+      "
+    ></ng-container>
+  </div>
+
+  <!-- Loading items for infinite scroll -->
+  <div
+    *ngFor="let _ of loadingItems; let index = index"
+    class="virtual-scroll-item loading"
+  >
+    <ng-container
+      *ngTemplateOutlet="
+        loadingTemplate || defaultLoadingTemplate;
+        context: { index: items.length + index }
+      "
+    ></ng-container>
+  </div>
+
+  <!-- Default item template -->
+  <ng-template #defaultItemTemplate let-item let-index="index">
+    <div class="item-checkbox">
+      <input
+        type="checkbox"
+        [checked]="item.selected"
+        (change)="onItemToggle(index, $event)"
+        [attr.aria-label]="'Select item ' + (index + 1)"
+      />
+    </div>
+    <div class="item-content">
+      <h3 class="item-title">
+        {{ item.title || "Item " + (index + 1) }}
+      </h3>
+      <p class="item-description">
+        {{ item.description || "Description for item " + (index + 1) }}
+      </p>
+      <div class="item-meta">
+        <span class="item-category" *ngIf="item.category">{{
+          item.category
+        }}</span>
+        <span class="item-date" *ngIf="item.date">{{ item.date }}</span>
+        <span class="item-value" *ngIf="item.value !== undefined">{{
+          "$" + item.value
+        }}</span>
+      </div>
+    </div>
+    <div class="item-actions">
+      <button
+        type="button"
+        class="item-button"
+        (click)="onItemAction(index, item)"
+      >
+        {{ item.buttonLabel || "Action" }}
+      </button>
+    </div>
+  </ng-template>
+
+  <!-- Default loading template -->
+  <ng-template #defaultLoadingTemplate let-index="index">
+    <div class="virtual-scroll-loading">
+      <span>Loading item {{ index }}...</span>
+    </div>
+  </ng-template>
+</cdk-virtual-scroll-viewport>

@@ -1,0 +1,30 @@
+<div class="search-wrapper-container">
+  <div class="search-section">
+    <label for="search-input" class="search-label">
+      Search Items by Title:
+    </label>
+    <input
+      id="search-input"
+      type="text"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange()"
+      placeholder="Type to search items..."
+      class="search-input"
+    />
+    <div class="search-results-info">
+      Showing {{ filteredItems.length }} of {{ items.length }} items
+      <span *ngIf="searchTerm" class="filter-info"
+        >(filtered by: "{{ searchTerm }}")</span
+      >
+    </div>
+  </div>
+
+  <app-virtual-scroll
+    [items]="filteredItems"
+    [height]="height"
+    [width]="width"
+    [itemSize]="itemSize"
+    (itemToggle)="onItemToggle($event)"
+    (itemAction)="onItemAction($event)"
+  ></app-virtual-scroll>
+</div>
